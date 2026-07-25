@@ -1,44 +1,30 @@
 #include <Arduino.h>
-#include <Adafruit_SSD1306.h>
-#include <Adafruit_GFX.h>
-#include <vector>
-#include <keyboard.hpp>
+#include <synthboard.hpp>
+
+#define AMPLITUDE 30000
 
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
-/*
-r1 10 | r2 20 | r3 21 | r4 4
-c1 5  | c2 6  | c3 7
-*/
-keyboard keyb(
-    {10, 20, 21, 4},
-    {5, 6, 7});
 
+float_t phase = 0.0;
+float_t phase_incr = (2.0f * PI * 440.0) / SAMPLERATE;
 
 void setup() {
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.setRotation(2); 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  for (int i = 0; i < keyb.r_size; i++) {
-    pinMode(keyb.row_pins[i], INPUT_PULLDOWN);
-  }
-  for (int i = 0; i < keyb.c_size; i++) {
-    pinMode(keyb.col_pins[i], OUTPUT);
-    digitalWrite(keyb.col_pins[i], LOW);
-  }
+  configure_audio();
+  configure_disp();
 }
 
 void loop() {
-  display.clearDisplay();
-  display.setCursor(0, 0);
-  keyb.scanKeys();
-  for (int r = 0; r < keyb.r_size; r++) {
-    for (int c = 0; c < keyb.c_size; c++) {
-      display.printf("%d | ",keyb.keystate[r][c]);
-    }
-    display.println();
-  }
-  display.display();
+  const int buffer_size = 256;
+  int16_t samples[buffer_size * 2];
 
+  for(int i = 0; i < buffer_size; i++) {
+    int16_t sample = (int16_t)(AMPLITUDE * sin(phase));
+    samples[i * 2]      = sample;
+    samples[i * 2 + 1]  = sample;
+    
+    phase += phase_incr;
+    if (phase >= 2.0f * PI) phase -= 2.0f * PI;
+  }
+  size_t bytes_written;
+  i2s_write(I2S_NUM_0, samples, sizeof(samples), &bytes_written, portMAX_DELAY);
 }
