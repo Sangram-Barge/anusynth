@@ -7,7 +7,7 @@ Adafruit_SSD1306 display(128, 64, &Wire, -1);
 float_t phase = 0.0;
 float_t phase_incr = (2.0f * PI * 440.0) / SAMPLERATE;
 
-uint16_t amplitude = 0;
+uint16_t amplitude = 30000;
 WaveShape currentWaveShape = W_SINE;
 
 void setup() {
@@ -35,12 +35,8 @@ void loop() {
   static unsigned long lastUpdate = 0;
   if (millis() - lastUpdate < 100) return;
   String txt = "";
-  amplitude = map(analogRead(4), 0, 4096, 0, 30000);
   txt += "Volume "; 
   txt +=  amplitude;
-  txt += "\n";
-  txt += "lastUpdated ";
-  txt += lastUpdate;
   txt += "\n";
   
   lastUpdate = millis();
