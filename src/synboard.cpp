@@ -36,10 +36,7 @@ void configure_disp(Adafruit_SSD1306& display) {
 }
 
 void update_disp(Adafruit_SSD1306& display, const char* buffer) {
-    static unsigned long lastUpdate = 0;
-    if (millis() - lastUpdate < 50) return;
-    lastUpdate = millis();
-    display.clearDisplay();
+   display.clearDisplay();
     display.setCursor(0, 0);
     display.printf(buffer);
     display.display();
