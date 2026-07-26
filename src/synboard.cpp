@@ -28,10 +28,16 @@ void configure_audio() {
   i2s_set_pin(I2S_NUM_0, &i2s_pin_cfg);
 }
 
-void configure_disp() {
-    Adafruit_SSD1306 display(128, 64, &Wire, -1);
+void configure_disp(Adafruit_SSD1306& display) {
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
+    display.display();
+}
+
+void update_disp(Adafruit_SSD1306& display, const char* buffer) {
+   display.clearDisplay();
+    display.setCursor(0, 0);
+    display.printf(buffer);
     display.display();
 }

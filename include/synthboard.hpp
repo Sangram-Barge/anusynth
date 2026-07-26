@@ -13,8 +13,10 @@
 #define SAMPLERATE 44100
 #endif
 
-void configure_disp();
+enum WaveShape {W_SINE, W_SQUARE, W_SAW, W_TRIANGLE};
 
+void configure_disp(Adafruit_SSD1306& display);
+void update_disp(Adafruit_SSD1306& display, const char* buffer);
 void configure_audio();
 
 #endif
